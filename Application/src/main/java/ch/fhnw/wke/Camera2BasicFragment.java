@@ -59,6 +59,7 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import java.io.File;
@@ -234,6 +235,7 @@ public class Camera2BasicFragment extends Fragment implements ActivityCompat.OnR
      */
     private File mFile;
 
+    private int counter = 0;
     /**
      * This a callback object for the {@link ImageReader}. "onImageAvailable" will be called when a
      * still image is ready to be saved.
@@ -344,6 +346,7 @@ public class Camera2BasicFragment extends Fragment implements ActivityCompat.OnR
                                        @NonNull CaptureRequest request,
                                        @NonNull TotalCaptureResult result) {
             process(result);
+            if (counter++<10) takePicture();
         }
 
     };
@@ -777,8 +780,7 @@ public class Camera2BasicFragment extends Fragment implements ActivityCompat.OnR
                     CameraMetadata.CONTROL_AF_TRIGGER_START);
             // Tell #mCaptureCallback to wait for the lock.
             mState = STATE_WAITING_LOCK;
-            mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
-                    mBackgroundHandler);
+            mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback, mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
