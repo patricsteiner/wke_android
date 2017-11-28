@@ -20,6 +20,7 @@ import java.util.ArrayList;
 public class RecognitionActivity extends AppCompatActivity implements PictureTakerTaskListener {
 
     private Camera2RawFragment mCamera2RawFragment;
+    private Camera2BasicFragment mCamera2BasicFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +28,7 @@ public class RecognitionActivity extends AppCompatActivity implements PictureTak
         setContentView(R.layout.activity_recognition);
         if (null == savedInstanceState) {
             mCamera2RawFragment = Camera2RawFragment.newInstance();
+            mCamera2BasicFragment = Camera2BasicFragment.newInstance();
             getFragmentManager().beginTransaction()
                     .replace(R.id.cameraContainer, mCamera2RawFragment)
                     .commit();
@@ -36,12 +38,11 @@ public class RecognitionActivity extends AppCompatActivity implements PictureTak
     static final int REQUEST_VIDEO_CAPTURE = 1;
 
     private void takeVideo() {
-        new ReviewActivity.HttpRequestTask().execute();
-        /*
+        //new ReviewActivity.HttpRequestTask().execute();
         Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
-        }*/
+        }
     }
 
     @Override
@@ -97,8 +98,8 @@ public class RecognitionActivity extends AppCompatActivity implements PictureTak
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        //takePictures();
-                        takeVideo();
+                        takePictures();
+                        //takeVideo();
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -137,8 +138,7 @@ public class RecognitionActivity extends AppCompatActivity implements PictureTak
                 camera2RawFragment.takePicture();
                 SystemClock.sleep(400);
             }
-            camera2RawFragment.finishedCaptureLocked();
-            SystemClock.sleep(2000);
+            SystemClock.sleep(5000);
             return true;
         }
 

@@ -564,7 +564,7 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
                 handleCompletionLocked(requestId, jpegBuilder, mJpegResultQueue);
                 handleCompletionLocked(requestId, rawBuilder, mRawResultQueue);
 
-                //TODO finishedCaptureLocked();
+                finishedCaptureLocked();
             }
 
             showToast(sb.toString());
@@ -688,7 +688,7 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
 
                 // We only use a camera that supports RAW in this sample.
                 if (!contains(characteristics.get(
-                                CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES),
+                        CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES),
                         CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_RAW)) {
                     continue;
                 }
@@ -697,7 +697,7 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
                         CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 
                 // For still image captures, we use the largest available size.
-                Size largestJpeg = Collections.max(
+                Size largestJpeg = Collections.min( // TODO changed to min
                         Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
                         new CompareSizesByArea());
 
@@ -710,17 +710,15 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
                     // counted wrapper to ensure they are only closed when all background tasks
                     // using them are finished.
                     if (mJpegImageReader == null || mJpegImageReader.getAndRetain() == null) {
-                        mJpegImageReader = new RefCountedAutoCloseable<>(
-                                ImageReader.newInstance(largestJpeg.getWidth(),
-                                        largestJpeg.getHeight(), ImageFormat.JPEG, /*maxImages*/5));
+                        mJpegImageReader = new RefCountedAutoCloseable<>( // TODO from largestRaw.getWidth(), largestRaw.getHeight() to 500
+                                ImageReader.newInstance(20, 20, ImageFormat.JPEG, /*maxImages*/5));
                     }
                     mJpegImageReader.get().setOnImageAvailableListener(
                             mOnJpegImageAvailableListener, mBackgroundHandler);
 
                     if (mRawImageReader == null || mRawImageReader.getAndRetain() == null) {
                         mRawImageReader = new RefCountedAutoCloseable<>(
-                                ImageReader.newInstance(largestRaw.getWidth(),
-                                        largestRaw.getHeight(), ImageFormat.RAW_SENSOR, /*maxImages*/ 5));
+                                ImageReader.newInstance(largestRaw.getWidth(), largestRaw.getHeight(), ImageFormat.RAW_SENSOR, /*maxImages*/ 5));
                     }
                     mRawImageReader.get().setOnImageAvailableListener(
                             mOnRawImageAvailableListener, mBackgroundHandler);
@@ -914,8 +912,7 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
 
             // Here, we create a CameraCaptureSession for camera preview.
             mCameraDevice.createCaptureSession(Arrays.asList(surface,
-                            mJpegImageReader.get().getSurface()/*, // TODO
-                            mRawImageReader.get().getSurface()*/),
+                    mJpegImageReader.get().getSurface(), mRawImageReader.get().getSurface()),
                     new CameraCaptureSession.StateCallback() {
                         @Override
                         public void onConfigured(CameraCaptureSession cameraCaptureSession) {
@@ -974,7 +971,7 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
         if (!mNoAFRun) {
             // If there is a "continuous picture" mode available, use it, otherwise default to AUTO.
             if (contains(mCharacteristics.get(
-                            CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES),
+                    CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES),
                     CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)) {
                 builder.set(CaptureRequest.CONTROL_AF_MODE,
                         CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
@@ -987,7 +984,7 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
         // If there is an auto-magical flash control mode available, use it, otherwise default to
         // the "on" mode, which is guaranteed to always be available.
         if (contains(mCharacteristics.get(
-                        CameraCharacteristics.CONTROL_AE_AVAILABLE_MODES),
+                CameraCharacteristics.CONTROL_AE_AVAILABLE_MODES),
                 CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH)) {
             builder.set(CaptureRequest.CONTROL_AE_MODE,
                     CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
@@ -998,7 +995,7 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
 
         // If there is an auto-magical white balance control mode available, use it.
         if (contains(mCharacteristics.get(
-                        CameraCharacteristics.CONTROL_AWB_AVAILABLE_MODES),
+                CameraCharacteristics.CONTROL_AWB_AVAILABLE_MODES),
                 CaptureRequest.CONTROL_AWB_MODE_AUTO)) {
             // Allow AWB to run auto-magically if this device supports this
             builder.set(CaptureRequest.CONTROL_AWB_MODE,
@@ -1195,7 +1192,7 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
                     mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
 
             captureBuilder.addTarget(mJpegImageReader.get().getSurface());
-            // TODO captureBuilder.addTarget(mRawImageReader.get().getSurface());
+            captureBuilder.addTarget(mRawImageReader.get().getSurface());
 
             // Use the same AE and AF modes as the preview.
             setup3AControlsLocked(captureBuilder);
@@ -1218,7 +1215,7 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
                     .setCharacteristics(mCharacteristics);
 
             mJpegResultQueue.put((int) request.getTag(), jpegBuilder);
-            //TODO mRawResultQueue.put((int) request.getTag(), rawBuilder);
+            mRawResultQueue.put((int) request.getTag(), rawBuilder);
 
             mCaptureSession.capture(request, mCaptureCallback, mBackgroundHandler);
 
@@ -1353,44 +1350,36 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
                     ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
                     byte[] bytes = new byte[buffer.remaining()];
                     buffer.get(bytes);
-
+//TODO added these 2 lines:
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, null);
                     ReviewActivity.addBitmap(bitmap);
 
-                    FileOutputStream output = null;
-                    try {
-                        output = new FileOutputStream(mFile);
-                        output.write(bytes);
-                        success = true;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        mImage.close();
-                        closeOutput(output);
-                    }
+//                    FileOutputStream output = null;
+//                    try {
+//                        output = new FileOutputStream(mFile);
+//                        output.write(bytes);
+//                        success = true;
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    } finally {
+//                        mImage.close();
+//                        closeOutput(output);
+//                    }
                     break;
                 }
                 case ImageFormat.RAW_SENSOR: {
-
-                    ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
-                    byte[] bytes = new byte[buffer.remaining()];
-                    buffer.get(bytes);
-
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, null);
-                    ReviewActivity.addBitmap(bitmap);
-
-                    DngCreator dngCreator = new DngCreator(mCharacteristics, mCaptureResult);
-                    FileOutputStream output = null;
-                    try {
-                        output = new FileOutputStream(mFile);
-                        dngCreator.writeImage(output, mImage);
-                        success = true;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        mImage.close();
-                        closeOutput(output);
-                    }
+//                    DngCreator dngCreator = new DngCreator(mCharacteristics, mCaptureResult);
+//                    FileOutputStream output = null;
+//                    try {
+//                        output = new FileOutputStream(mFile);
+//                        dngCreator.writeImage(output, mImage);
+//                        success = true;
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    } finally {
+//                        mImage.close();
+//                        closeOutput(output);
+//                    }
                     break;
                 }
                 default: {
@@ -1406,17 +1395,17 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
             if (success) {
                 MediaScannerConnection.scanFile(mContext, new String[]{mFile.getPath()},
                 /*mimeTypes*/null, new MediaScannerConnection.MediaScannerConnectionClient() {
-                    @Override
-                    public void onMediaScannerConnected() {
-                        // Do nothing
-                    }
+                            @Override
+                            public void onMediaScannerConnected() {
+                                // Do nothing
+                            }
 
-                    @Override
-                    public void onScanCompleted(String path, Uri uri) {
-                        Log.i(TAG, "Scanned " + path + ":");
-                        Log.i(TAG, "-> uri=" + uri);
-                    }
-                });
+                            @Override
+                            public void onScanCompleted(String path, Uri uri) {
+                                Log.i(TAG, "Scanned " + path + ":");
+                                Log.i(TAG, "-> uri=" + uri);
+                            }
+                        });
             }
         }
 
@@ -1624,7 +1613,7 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
      * @return The optimal {@code Size}, or an arbitrary one if none were big enough
      */
     private static Size chooseOptimalSize(Size[] choices, int textureViewWidth,
-            int textureViewHeight, int maxWidth, int maxHeight, Size aspectRatio) {
+                                          int textureViewHeight, int maxWidth, int maxHeight, Size aspectRatio) {
         // Collect the supported resolutions that are at least as big as the preview Surface
         List<Size> bigEnough = new ArrayList<>();
         // Collect the supported resolutions that are smaller than the preview Surface
@@ -1635,7 +1624,7 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
             if (option.getWidth() <= maxWidth && option.getHeight() <= maxHeight &&
                     option.getHeight() == option.getWidth() * h / w) {
                 if (option.getWidth() >= textureViewWidth &&
-                    option.getHeight() >= textureViewHeight) {
+                        option.getHeight() >= textureViewHeight) {
                     bigEnough.add(option);
                 } else {
                     notBigEnough.add(option);

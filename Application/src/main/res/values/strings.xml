@@ -18,4 +18,6 @@
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
     <string name="recognize">Recognize</string>
     <string name="add_new_part">Add new part</string>
+    <string name="abort">abort mission</string>
+    <string name="submit">all good, go for it!</string>
 </resources>
