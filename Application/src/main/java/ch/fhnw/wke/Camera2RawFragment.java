@@ -1353,6 +1353,7 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
 //TODO added these 2 lines:
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, null);
                     ReviewActivity.addBitmap(bitmap);
+                    RecognitionActivity.bitmap = bitmap;
 
 //                    FileOutputStream output = null;
 //                    try {

@@ -13,14 +13,23 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
+
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
-public class RecognitionActivity extends AppCompatActivity implements PictureTakerTaskListener {
+public class RecognitionActivity extends AppCompatActivity implements PictureTakerTaskListener, RecognitionTaskListener {
 
     private Camera2RawFragment mCamera2RawFragment;
     private Camera2BasicFragment mCamera2BasicFragment;
+    public static Bitmap bitmap;
+    public static JSONRecognitionResult jsonRecognitionResult; // TODO this is ugly af, but why the hell can't we pass objects to ohter activities??!?
+    private ProgressDialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,24 +80,22 @@ public class RecognitionActivity extends AppCompatActivity implements PictureTak
     }
 
     public void recognize(View view) {
-        final ProgressDialog dialog = new ProgressDialog(this); // this = YourActivity
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        dialog.setMessage("Trying to recognize... please wait");
-        dialog.setIndeterminate(true);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                dialog.dismiss();
-                showRecognitionResult();
-            }
-        }, 2000);
-
+        takePicture();
+        mDialog = new ProgressDialog(this);
+        mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        mDialog.setMessage("Trying to recognize... please wait");
+        mDialog.setIndeterminate(true);
+        mDialog.setCanceledOnTouchOutside(false);
+        mDialog.show();
+        HttpRequestRecognitionTask httpRequestRecognitionTask = new HttpRequestRecognitionTask(this);
+        httpRequestRecognitionTask.execute();
     }
 
-    private void showRecognitionResult() {
+    @Override
+    public void onRecognitionResult(JSONRecognitionResult jsonRecognitionResult) {
+        mDialog.dismiss();
         Intent intent = new Intent(this, RecognitionResultActivity.class);
+        this.jsonRecognitionResult = jsonRecognitionResult; // TODO this is shit
         startActivity(intent);
     }
 
@@ -115,6 +122,11 @@ public class RecognitionActivity extends AppCompatActivity implements PictureTak
     public void onPicturesTaken() {
         Intent intent = new Intent(this, ReviewActivity.class);
         startActivity(intent);
+    }
+
+    private void takePicture() {
+        mCamera2RawFragment.takePicture();
+        SystemClock.sleep(2000);
     }
 
     private void takePictures() {
@@ -149,8 +161,44 @@ public class RecognitionActivity extends AppCompatActivity implements PictureTak
 
     }
 
+    static class HttpRequestRecognitionTask extends AsyncTask<Void, Void, JSONRecognitionResult> {
+
+        private RecognitionTaskListener recognitionTaskListener;
+
+        public HttpRequestRecognitionTask(RecognitionTaskListener recognitionTaskListener) {
+            this.recognitionTaskListener = recognitionTaskListener;
+        }
+
+        @Override
+        protected JSONRecognitionResult doInBackground(Void... params) {
+            try {
+                final String baseUrl = "http://192.168.1.116:8888/";
+                final String recognizeWorkpieceUrl = baseUrl + "";
+                RestTemplate restTemplate = new RestTemplate();
+                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 95, byteArrayOutputStream);
+                String image = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
+                byteArrayOutputStream.reset();
+                JSONRecognitionResult jsonRecognitionResult = restTemplate.postForObject(recognizeWorkpieceUrl, new JSONImage(0, "", image), JSONRecognitionResult.class);
+                return jsonRecognitionResult;
+            } catch (Exception e) {
+                Log.e("RecognitionActivity", e.getMessage(), e);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(JSONRecognitionResult jsonRecognitionResult) {
+            recognitionTaskListener.onRecognitionResult(jsonRecognitionResult);
+        }
+    }
 }
 
 interface PictureTakerTaskListener {
     void onPicturesTaken();
+}
+
+interface RecognitionTaskListener {
+    void onRecognitionResult(JSONRecognitionResult jsonRecognitionResult);
 }
