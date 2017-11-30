@@ -1,4 +1,4 @@
-package ch.fhnw.wke;
+package ch.fhnw.wke.json;
 
 public class JSONImage {
 
@@ -40,4 +40,5 @@ public class JSONImage {
     public void setImage(String image) {
         this.image = image;
     }
+
 }

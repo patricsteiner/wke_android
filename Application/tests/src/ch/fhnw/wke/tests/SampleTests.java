@@ -17,7 +17,7 @@ package ch.fhnw.wke.tests;
 
 import android.test.ActivityInstrumentationTestCase2;
 
-import ch.fhnw.wke.RecognitionActivity;
+import ch.fhnw.wke.activities.RecognitionActivity;
 
 /**
 * Tests for Camera2Basic sample.

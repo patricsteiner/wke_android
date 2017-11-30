@@ -1,4 +1,4 @@
-package ch.fhnw.wke;
+package ch.fhnw.wke.json;
 
 import java.util.List;
 

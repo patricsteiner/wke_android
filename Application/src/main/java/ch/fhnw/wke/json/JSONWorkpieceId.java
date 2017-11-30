@@ -1,4 +1,4 @@
-package ch.fhnw.wke;
+package ch.fhnw.wke.json;
 
 public class JSONWorkpieceId {
 
@@ -18,4 +18,5 @@ public class JSONWorkpieceId {
     public void setWorkpieceId(String workpieceId) {
         this.workpieceId = workpieceId;
     }
+
 }

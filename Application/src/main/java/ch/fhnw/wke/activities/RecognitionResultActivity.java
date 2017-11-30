@@ -1,4 +1,4 @@
-package ch.fhnw.wke;
+package ch.fhnw.wke.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -23,4 +23,5 @@ public class RecognitionResultActivity extends AppCompatActivity {
         textView2.setText(String.valueOf(scores.get(1) + "\nclass: " + classes.get(1)));
         textView3.setText(String.valueOf(scores.get(2) + "\nclass: " + classes.get(2)));
     }
+
 }

@@ -33,7 +33,7 @@
         android:label="@string/app_name"
         android:theme="@style/MaterialTheme">
         <activity
-            android:name=".RecognitionActivity"
+            android:name=".activities.RecognitionActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,20 +42,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".RecognitionResultActivity"
+            android:name=".activities.RecognitionResultActivity"
             android:label="@string/app_name">
-            android:parentActivityName="ch.fhnw.wke.RecognitionActivity">
+            android:parentActivityName="ch.fhnw.wke.activities.RecognitionActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="ch.fhnw.wke.RecognitionActivity" />
+                android:value="ch.fhnw.wke.activities.RecognitionActivity" />
         </activity>
         <activity
-            android:name=".ReviewActivity"
+            android:name=".activities.ReviewActivity"
             android:label="@string/app_name">
             android:parentActivityName=".RecognitionActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="ch.fhnw.wke.RecognitionActivity" />
+                android:value="ch.fhnw.wke.activities.RecognitionActivity" />
         </activity>
     </application>
 

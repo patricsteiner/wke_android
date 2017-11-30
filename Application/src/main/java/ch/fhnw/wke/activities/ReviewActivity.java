@@ -1,11 +1,9 @@
-package ch.fhnw.wke;
+package ch.fhnw.wke.activities;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +11,11 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.RestTemplate;
-
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import ch.fhnw.wke.R;
+import ch.fhnw.wke.tasks.ImageAdderTask;
 
 public class ReviewActivity extends AppCompatActivity {
 
@@ -39,9 +36,9 @@ public class ReviewActivity extends AppCompatActivity {
     }
 
     public void submit(View view) {
-        HttpRequestTask httpRequestTask = new HttpRequestTask();
-        httpRequestTask.execute(); // TODO show spinner or sth...
-        finish();
+        ImageAdderTask imageAdderTask = new ImageAdderTask();
+        imageAdderTask.execute(); // TODO show spinner or sth...
+        imageAdderTask.setOnPostExecuteAction((Void) -> finish());
     }
 
     public void abort(View view) {
@@ -83,37 +80,11 @@ public class ReviewActivity extends AppCompatActivity {
             }
             // TODO this is a bit ugly... getting images from static arr lol
             imageView.setImageBitmap(mBitmaps.get(position));
-            imageView.setOnClickListener(e -> Log.i("total images: ", getCount()+ ""));
+            imageView.setOnClickListener(e -> Log.i("total images: ", getCount() + ""));
             return imageView;
         }
     }
 
-    public static class HttpRequestTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                final String baseUrl = "http://192.168.1.116:8888/";
-                final String newWorkpieceIdUrl = baseUrl + "new_workpiece_id";
-                final String addWorkpieceImageUrl = baseUrl + "add_workpiece_image";
-                RestTemplate restTemplate = new RestTemplate();
-                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-
-                JSONWorkpieceId jsonWorkpieceId = restTemplate.getForObject(newWorkpieceIdUrl, JSONWorkpieceId.class);
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                for (int i = 0; i < bitmaps.size(); i++) {
-                    Bitmap bitmap = bitmaps.get(i);
-                    if (bitmap == null) continue;
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 95, byteArrayOutputStream);
-                    String image = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
-                    byteArrayOutputStream.reset();
-                    restTemplate.postForObject(addWorkpieceImageUrl, new JSONImage(i, jsonWorkpieceId.getWorkpieceId(), image), JSONWorkpieceId.class);
-                }
-            } catch (Exception e) {
-                Log.e("ReviewActivity", e.getMessage(), e);
-            }
-            return null;
-        }
-    }
 }
 
 
