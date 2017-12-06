@@ -89,6 +89,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import ch.fhnw.wke.activities.RecognitionActivity;
 import ch.fhnw.wke.activities.ReviewActivity;
+import ch.fhnw.wke.util.Data;
 
 /**
  * A fragment that demonstrates use of the Camera2 API to capture RAW and JPEG photos.
@@ -712,14 +713,14 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
                     // using them are finished.
                     if (mJpegImageReader == null || mJpegImageReader.getAndRetain() == null) {
                         mJpegImageReader = new RefCountedAutoCloseable<>( // TODO from largestRaw.getWidth(), largestRaw.getHeight() to 500
-                                ImageReader.newInstance(20, 20, ImageFormat.JPEG, /*maxImages*/5));
+                                ImageReader.newInstance(20, 20, ImageFormat.JPEG, /*maxImages*/30));
                     }
                     mJpegImageReader.get().setOnImageAvailableListener(
                             mOnJpegImageAvailableListener, mBackgroundHandler);
 
                     if (mRawImageReader == null || mRawImageReader.getAndRetain() == null) {
                         mRawImageReader = new RefCountedAutoCloseable<>(
-                                ImageReader.newInstance(largestRaw.getWidth(), largestRaw.getHeight(), ImageFormat.RAW_SENSOR, /*maxImages*/ 5));
+                                ImageReader.newInstance(largestRaw.getWidth(), largestRaw.getHeight(), ImageFormat.RAW_SENSOR, /*maxImages*/ 30));
                     }
                     mRawImageReader.get().setOnImageAvailableListener(
                             mOnRawImageAvailableListener, mBackgroundHandler);
@@ -1353,8 +1354,8 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
                     buffer.get(bytes);
 //TODO added these 2 lines:
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, null);
-                    ReviewActivity.addBitmap(bitmap);
-                    RecognitionActivity.bitmap = bitmap;
+                    Data.imagesToBeAdded.add(bitmap);
+                    Data.imageToBeRecognized = bitmap;
 
 //                    FileOutputStream output = null;
 //                    try {

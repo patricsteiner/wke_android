@@ -73,6 +73,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import ch.fhnw.wke.activities.ReviewActivity;
+import ch.fhnw.wke.util.Data;
 
 public class Camera2BasicFragment extends Fragment implements ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -920,7 +921,7 @@ public class Camera2BasicFragment extends Fragment implements ActivityCompat.OnR
 
             // TODO added this:
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, null);
-            ReviewActivity.addBitmap(bitmap);
+            Data.imagesToBeAdded.add(bitmap);
             mImage.close();
 
             /*try {

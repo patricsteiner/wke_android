@@ -16,15 +16,11 @@ import java.util.List;
 
 import ch.fhnw.wke.R;
 import ch.fhnw.wke.tasks.ImageAdderTask;
+import ch.fhnw.wke.util.Data;
 
 public class ReviewActivity extends AppCompatActivity {
 
-    public static List<Bitmap> bitmaps = new ArrayList<>();
-    private ImageAdapter mImageAdapter = new ImageAdapter(this, bitmaps);
-
-    public static void addBitmap(Bitmap bitmap) {
-        bitmaps.add(bitmap);
-    }
+    private ImageAdapter mImageAdapter = new ImageAdapter(this, Data.imagesToBeAdded);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +33,8 @@ public class ReviewActivity extends AppCompatActivity {
 
     public void submit(View view) {
         ImageAdderTask imageAdderTask = new ImageAdderTask();
-        imageAdderTask.execute(); // TODO show spinner or sth...
         imageAdderTask.setOnPostExecuteAction((Void) -> finish());
+        imageAdderTask.execute(Data.imagesToBeAdded.toArray(new Bitmap[Data.imagesToBeAdded.size()])); // TODO show spinner or sth...
     }
 
     public void abort(View view) {
@@ -46,16 +42,16 @@ public class ReviewActivity extends AppCompatActivity {
     }
 
     public class ImageAdapter extends BaseAdapter {
-        private Context mContext;
-        private List<Bitmap> mBitmaps;
+        private Context context;
+        private List<Bitmap> bitmaps;
 
         public ImageAdapter(Context context, List<Bitmap> bitmaps) {
-            mContext = context;
-            mBitmaps = bitmaps;
+            this.context = context;
+            this.bitmaps = bitmaps;
         }
 
         public int getCount() {
-            return mBitmaps.size();
+            return bitmaps.size();
         }
 
         public Object getItem(int position) {
@@ -71,15 +67,14 @@ public class ReviewActivity extends AppCompatActivity {
             ImageView imageView;
             if (convertView == null) {
                 // if it's not recycled, initialize some attributes
-                imageView = new ImageView(mContext);
+                imageView = new ImageView(context);
                 imageView.setLayoutParams(new GridView.LayoutParams(parent.getWidth(), parent.getWidth()));
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setPadding(8, 8, 8, 8);
             } else {
                 imageView = (ImageView) convertView;
             }
-            // TODO this is a bit ugly... getting images from static arr lol
-            imageView.setImageBitmap(mBitmaps.get(position));
+            imageView.setImageBitmap(bitmaps.get(position));
             imageView.setOnClickListener(e -> Log.i("total images: ", getCount() + ""));
             return imageView;
         }

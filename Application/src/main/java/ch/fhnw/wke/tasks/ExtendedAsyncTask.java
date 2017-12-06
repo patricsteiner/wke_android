@@ -17,7 +17,8 @@ public abstract class ExtendedAsyncTask<Params, Progress, Result> extends AsyncT
 
     @Override
     protected void onPostExecute(Result result) {
-        onPostExecuteAction.execute(result);
+        if (onPostExecuteAction != null)
+            onPostExecuteAction.execute(result);
     }
 
 }

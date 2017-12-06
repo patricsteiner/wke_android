@@ -7,6 +7,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import ch.fhnw.wke.R;
+import ch.fhnw.wke.util.Data;
 
 public class RecognitionResultActivity extends AppCompatActivity {
 
@@ -14,8 +15,8 @@ public class RecognitionResultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recognition_result);
-        List<Float> scores = RecognitionActivity.jsonRecognitionResult.getScores();
-        List<String> classes = RecognitionActivity.jsonRecognitionResult.getClasses();
+        List<Float> scores = Data.jsonRecognitionResult.getScores();
+        List<String> classes = Data.jsonRecognitionResult.getClasses();
         TextView textView1 = (TextView) findViewById(R.id.textView1);
         TextView textView2 = (TextView) findViewById(R.id.textView2);
         TextView textView3 = (TextView) findViewById(R.id.textView3);
