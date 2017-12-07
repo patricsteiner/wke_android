@@ -6,13 +6,15 @@ public class JSONRecognitionResult {
 
     private List<Float> scores;
     private List<String> classes;
+    private List<String> images;
 
     public JSONRecognitionResult() {
     }
 
-    public JSONRecognitionResult(List<Float> scores, List<String> classes) {
+    public JSONRecognitionResult(List<Float> scores, List<String> classes, List<String> images) {
         this.scores = scores;
         this.classes = classes;
+        this.images = images;
     }
 
     public List<Float> getScores() {
@@ -31,4 +33,11 @@ public class JSONRecognitionResult {
         this.classes = classes;
     }
 
+    public List<String> getImages() {
+        return images;
+    }
+
+    public void setImages(List<String> images) {
+        this.images = images;
+    }
 }
