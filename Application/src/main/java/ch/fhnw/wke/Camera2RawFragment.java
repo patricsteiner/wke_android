@@ -699,7 +699,7 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
                         CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 
                 // For still image captures, we use the largest available size.
-                Size largestJpeg = Collections.min( // TODO changed to min
+                Size largestJpeg = Collections.max(
                         Arrays.asList(map.getOutputSizes(ImageFormat.JPEG)),
                         new CompareSizesByArea());
 
@@ -712,18 +712,18 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
                     // counted wrapper to ensure they are only closed when all background tasks
                     // using them are finished.
                     if (mJpegImageReader == null || mJpegImageReader.getAndRetain() == null) {
-                        mJpegImageReader = new RefCountedAutoCloseable<>( // TODO from largestRaw.getWidth(), largestRaw.getHeight() to 500
-                                ImageReader.newInstance(20, 20, ImageFormat.JPEG, /*maxImages*/30));
+                        mJpegImageReader = new RefCountedAutoCloseable<>( // TODO
+                                ImageReader.newInstance(largestJpeg.getWidth()/4, largestJpeg.getHeight()/4, ImageFormat.JPEG, /*maxImages*/30));
                     }
                     mJpegImageReader.get().setOnImageAvailableListener(
                             mOnJpegImageAvailableListener, mBackgroundHandler);
 
-                    if (mRawImageReader == null || mRawImageReader.getAndRetain() == null) {
-                        mRawImageReader = new RefCountedAutoCloseable<>(
-                                ImageReader.newInstance(largestRaw.getWidth(), largestRaw.getHeight(), ImageFormat.RAW_SENSOR, /*maxImages*/ 30));
-                    }
-                    mRawImageReader.get().setOnImageAvailableListener(
-                            mOnRawImageAvailableListener, mBackgroundHandler);
+//   TODO                 if (mRawImageReader == null || mRawImageReader.getAndRetain() == null) {
+//                        mRawImageReader = new RefCountedAutoCloseable<>(
+//                                ImageReader.newInstance(largestRaw.getWidth(), largestRaw.getHeight(), ImageFormat.RAW_SENSOR, /*maxImages*/ 30));
+//                    }
+//                    mRawImageReader.get().setOnImageAvailableListener(
+//                            mOnRawImageAvailableListener, mBackgroundHandler);
 
                     mCharacteristics = characteristics;
                     mCameraId = cameraId;
@@ -914,7 +914,7 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
 
             // Here, we create a CameraCaptureSession for camera preview.
             mCameraDevice.createCaptureSession(Arrays.asList(surface,
-                    mJpegImageReader.get().getSurface(), mRawImageReader.get().getSurface()),
+                    mJpegImageReader.get().getSurface()/*, mRawImageReader.get().getSurface()*/), // TODO
                     new CameraCaptureSession.StateCallback() {
                         @Override
                         public void onConfigured(CameraCaptureSession cameraCaptureSession) {
@@ -1194,7 +1194,7 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
                     mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
 
             captureBuilder.addTarget(mJpegImageReader.get().getSurface());
-            captureBuilder.addTarget(mRawImageReader.get().getSurface());
+            //captureBuilder.addTarget(mRawImageReader.get().getSurface());
 
             // Use the same AE and AF modes as the preview.
             setup3AControlsLocked(captureBuilder);
@@ -1217,7 +1217,7 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
                     .setCharacteristics(mCharacteristics);
 
             mJpegResultQueue.put((int) request.getTag(), jpegBuilder);
-            mRawResultQueue.put((int) request.getTag(), rawBuilder);
+            // TODO mRawResultQueue.put((int) request.getTag(), rawBuilder);
 
             mCaptureSession.capture(request, mCaptureCallback, mBackgroundHandler);
 
@@ -1352,7 +1352,7 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
                     ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
                     byte[] bytes = new byte[buffer.remaining()];
                     buffer.get(bytes);
-//TODO added these 2 lines:
+//TODO added this
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, null);
                     Data.imagesToBeAdded.add(bitmap);
                     Data.imageToBeRecognized = bitmap;
@@ -1371,6 +1371,21 @@ public class Camera2RawFragment extends Fragment implements FragmentCompat.OnReq
                     break;
                 }
                 case ImageFormat.RAW_SENSOR: {
+                    //Bitmap bitmap = Bitmap.createBitmap(300, 300, Bitmap.Config.ARGB_8888);
+                    //bitmap.copyPixelsFromBuffer(mImage.getPlanes()[0].getBuffer());
+//                    ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
+//                    byte[] bytes = new byte[buffer.remaining()*10];
+//                    buffer.get(bytes);
+                    //Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, null);
+
+                    Bitmap bm = Bitmap.createBitmap(mImage.getWidth()/2, mImage.getHeight()/2, Bitmap.Config.ARGB_8888);
+                    bm.copyPixelsFromBuffer(mImage.getPlanes()[0].getBuffer());
+
+                    Data.imagesToBeAdded.add(bm);
+                    Data.imageToBeRecognized = bm;
+                    //Data.imagesToBeAdded.add(bitmap);
+                    //Data.imageToBeRecognized = bitmap;
+
 //                    DngCreator dngCreator = new DngCreator(mCharacteristics, mCaptureResult);
 //                    FileOutputStream output = null;
 //                    try {

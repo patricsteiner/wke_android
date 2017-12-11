@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import ch.fhnw.wke.Camera2BasicFragment;
 import ch.fhnw.wke.Camera2RawFragment;
 import ch.fhnw.wke.R;
+import ch.fhnw.wke.tasks.PictureTakerTask;
 import ch.fhnw.wke.tasks.RecognitionRestCall;
 import ch.fhnw.wke.util.Data;
 
@@ -102,24 +103,12 @@ public class RecognitionActivity extends AppCompatActivity {
                 .setMessage("Press OK when machine part is in box, motor & lights are on and phone is in holder")
                 .setPositiveButton(android.R.string.ok, (dialogInterface, x) -> {
                     Data.imagesToBeAdded = new ArrayList<>();
-                    int totalTasks = 20;
-                    int delayBetweenPictures = 500;
-                    ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(totalTasks);
-                    scheduledExecutorService.scheduleAtFixedRate(() -> mCamera2RawFragment.takePicture(), delayBetweenPictures, delayBetweenPictures, TimeUnit.MILLISECONDS);
-                    try {
-                        Thread.sleep((totalTasks + 1) * delayBetweenPictures);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    scheduledExecutorService.shutdown();
-                    try {
-                        scheduledExecutorService.awaitTermination(6000, TimeUnit.SECONDS);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                    Intent intent = new Intent(this, ReviewActivity.class);
-                    startActivity(intent);
+                    PictureTakerTask pictureTakerTask = new PictureTakerTask();
+                    pictureTakerTask.setOnPostExecuteAction(Void -> {
+                        Intent intent = new Intent(this, ReviewActivity.class);
+                        startActivity(intent);
+                    });
+                    pictureTakerTask.execute(mCamera2RawFragment);
                 })
                 .setNegativeButton(android.R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss())
                 .show();
