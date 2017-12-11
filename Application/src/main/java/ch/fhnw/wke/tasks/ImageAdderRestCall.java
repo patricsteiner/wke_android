@@ -8,7 +8,7 @@ import ch.fhnw.wke.dto.ImageData;
 import ch.fhnw.wke.dto.WorkpieceIdData;
 import ch.fhnw.wke.util.Util;
 
-public class ImageAdderTask extends RestCall<Bitmap, Void, Void> {
+public class ImageAdderRestCall extends AbstractRestCall<Bitmap, Void, Void> {
 
     @Override
     protected Void doInBackground(Bitmap... bitmaps) {
@@ -16,12 +16,12 @@ public class ImageAdderTask extends RestCall<Bitmap, Void, Void> {
             WorkpieceIdData workpieceIdData = getRestTemplate().getForObject(Config.REST_ENDPOINT_NEW_WORKPIECE_ID, WorkpieceIdData.class);
             for (int i = 0; i < bitmaps.length; i++) {
                 Bitmap bitmap = bitmaps[i];
-                if (bitmap == null) continue;
+                if (bitmap == null) continue; // if camera is too slow, some entries may be null
                 getRestTemplate().postForObject(Config.REST_ENDPOINT_ADD_WORKPIECE_IMAGE_,
                         new ImageData(i, workpieceIdData.getWorkpieceId(), Util.bitmapToBase64(bitmap)), WorkpieceIdData.class);
             }
         } catch (Exception e) {
-            Log.e("ImageAdderTask", e.getMessage(), e);
+            Log.e(getClass().getSimpleName(), e.getMessage(), e);
         }
         return null;
     }

@@ -6,7 +6,6 @@ public class ImageData {
     private String workpieceId;
     private String image;
 
-
     public ImageData() {
     }
 

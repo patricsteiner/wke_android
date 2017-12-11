@@ -11,11 +11,10 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ch.fhnw.wke.R;
-import ch.fhnw.wke.tasks.ImageAdderTask;
+import ch.fhnw.wke.tasks.ImageAdderRestCall;
 import ch.fhnw.wke.util.Data;
 
 public class ReviewActivity extends AppCompatActivity {
@@ -26,15 +25,15 @@ public class ReviewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review);
-        GridView gridview = (GridView) findViewById(R.id.gridview);
+        GridView gridview = findViewById(R.id.gridview);
         gridview.setAdapter(mImageAdapter);
 
     }
 
     public void submit(View view) {
-        ImageAdderTask imageAdderTask = new ImageAdderTask();
-        imageAdderTask.setOnPostExecuteAction((Void) -> finish());
-        imageAdderTask.execute(Data.imagesToBeAdded.toArray(new Bitmap[Data.imagesToBeAdded.size()])); // TODO show spinner or sth...
+        ImageAdderRestCall imageAdderRestCall = new ImageAdderRestCall();
+        imageAdderRestCall.setOnPostExecuteAction((Void) -> finish());
+        imageAdderRestCall.execute(Data.imagesToBeAdded.toArray(new Bitmap[Data.imagesToBeAdded.size()])); // TODO show spinner or sth...
     }
 
     public void abort(View view) {

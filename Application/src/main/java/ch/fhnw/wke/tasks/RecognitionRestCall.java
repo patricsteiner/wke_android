@@ -8,7 +8,7 @@ import ch.fhnw.wke.dto.ImageData;
 import ch.fhnw.wke.dto.RecognitionResultData;
 import ch.fhnw.wke.util.Util;
 
-public class RecognitionRestCall extends RestCall<Bitmap, Void, RecognitionResultData> {
+public class RecognitionRestCall extends AbstractRestCall<Bitmap, Void, RecognitionResultData> {
 
     @Override
     protected RecognitionResultData doInBackground(Bitmap... bitmaps) {
@@ -18,7 +18,7 @@ public class RecognitionRestCall extends RestCall<Bitmap, Void, RecognitionResul
                     new ImageData(0, "", Util.bitmapToBase64(bitmap)), RecognitionResultData.class);
             return recognitionResultData;
         } catch (Exception e) {
-            Log.e("RecognitionTask", e.getMessage(), e);
+            Log.e(getClass().getSimpleName(), e.getMessage(), e);
         }
         return null;
     }

@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 
 import ch.fhnw.wke.util.Action;
 
-public abstract class ExtendedAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
+public abstract class AbstractAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
 
     private Action<Result> onPostExecuteAction;
 

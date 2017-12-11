@@ -103,10 +103,11 @@ public class RecognitionActivity extends AppCompatActivity {
                 .setPositiveButton(android.R.string.ok, (dialogInterface, x) -> {
                     Data.imagesToBeAdded = new ArrayList<>();
                     int totalTasks = 20;
+                    int delayBetweenPictures = 500;
                     ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(totalTasks);
-                    scheduledExecutorService.scheduleAtFixedRate(() -> mCamera2RawFragment.takePicture(), 500, 500, TimeUnit.MILLISECONDS);
+                    scheduledExecutorService.scheduleAtFixedRate(() -> mCamera2RawFragment.takePicture(), delayBetweenPictures, delayBetweenPictures, TimeUnit.MILLISECONDS);
                     try {
-                        Thread.sleep(15000);
+                        Thread.sleep((totalTasks + 1) * delayBetweenPictures);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
