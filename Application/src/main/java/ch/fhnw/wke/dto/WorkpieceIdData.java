@@ -1,13 +1,13 @@
-package ch.fhnw.wke.json;
+package ch.fhnw.wke.dto;
 
-public class JSONWorkpieceId {
+public class WorkpieceIdData {
 
     private String workpieceId;
 
-    public JSONWorkpieceId() {
+    public WorkpieceIdData() {
     }
 
-    public JSONWorkpieceId(String workpieceId) {
+    public WorkpieceIdData(String workpieceId) {
         this.workpieceId = workpieceId;
     }
 

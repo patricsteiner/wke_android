@@ -3,17 +3,12 @@ package ch.fhnw.wke.activities;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.media.MediaMetadataRetriever;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -21,8 +16,6 @@ import java.util.concurrent.TimeUnit;
 import ch.fhnw.wke.Camera2BasicFragment;
 import ch.fhnw.wke.Camera2RawFragment;
 import ch.fhnw.wke.R;
-import ch.fhnw.wke.json.JSONRecognitionResult;
-import ch.fhnw.wke.tasks.PictureTakerTask;
 import ch.fhnw.wke.tasks.RecognitionRestCall;
 import ch.fhnw.wke.util.Data;
 
@@ -94,8 +87,8 @@ public class RecognitionActivity extends AppCompatActivity {
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
         RecognitionRestCall recognitionRestCall = new RecognitionRestCall();
-        recognitionRestCall.setOnPostExecuteAction(jsonRecognitionResult -> {
-            Data.jsonRecognitionResult = jsonRecognitionResult;
+        recognitionRestCall.setOnPostExecuteAction(recognitionResultData -> {
+            Data.recognitionResultData = recognitionResultData;
             progressDialog.dismiss();
             Intent intent = new Intent(this, RecognitionResultActivity.class);
             startActivity(intent);

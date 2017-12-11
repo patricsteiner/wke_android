@@ -5,11 +5,11 @@ import android.graphics.Bitmap;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.fhnw.wke.json.JSONRecognitionResult;
+import ch.fhnw.wke.dto.RecognitionResultData;
 
 public class Data {
 
-    public static JSONRecognitionResult jsonRecognitionResult;
+    public static RecognitionResultData recognitionResultData;
     public static Bitmap imageToBeRecognized;
     public static List<Bitmap> imagesToBeAdded = new ArrayList<>();
 

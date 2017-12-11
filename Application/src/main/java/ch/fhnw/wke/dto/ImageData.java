@@ -1,17 +1,16 @@
-package ch.fhnw.wke.json;
+package ch.fhnw.wke.dto;
 
-public class JSONImage {
+public class ImageData {
 
     private int imageNumber;
     private String workpieceId;
     private String image;
 
 
-    public JSONImage() {
-
+    public ImageData() {
     }
 
-    public JSONImage(int imageNumber, String workpieceId, String image) {
+    public ImageData(int imageNumber, String workpieceId, String image) {
         this.imageNumber = imageNumber;
         this.workpieceId = workpieceId;
         this.image = image;

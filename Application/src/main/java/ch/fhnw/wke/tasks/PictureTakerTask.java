@@ -1,7 +1,5 @@
 package ch.fhnw.wke.tasks;
 
-import android.os.SystemClock;
-
 import ch.fhnw.wke.Camera2RawFragment;
 
 public class PictureTakerTask extends ExtendedAsyncTask<Camera2RawFragment, Void, Boolean> {

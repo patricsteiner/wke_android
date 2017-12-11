@@ -1,17 +1,17 @@
-package ch.fhnw.wke.json;
+package ch.fhnw.wke.dto;
 
 import java.util.List;
 
-public class JSONRecognitionResult {
+public class RecognitionResultData {
 
     private List<Float> scores;
     private List<String> classes;
     private List<String> images;
 
-    public JSONRecognitionResult() {
+    public RecognitionResultData() {
     }
 
-    public JSONRecognitionResult(List<Float> scores, List<String> classes, List<String> images) {
+    public RecognitionResultData(List<Float> scores, List<String> classes, List<String> images) {
         this.scores = scores;
         this.classes = classes;
         this.images = images;
