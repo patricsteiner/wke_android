@@ -16,7 +16,7 @@ public class ImageAdderRestCall extends AbstractRestCall<Bitmap, Integer, Void> 
             WorkpieceIdData workpieceIdData = getRestTemplate().getForObject(Config.REST_ENDPOINT_NEW_WORKPIECE_ID, WorkpieceIdData.class);
             for (int i = 0; i < bitmaps.length; i++) {
                 Bitmap bitmap = bitmaps[i];
-                getRestTemplate().postForObject(Config.REST_ENDPOINT_ADD_WORKPIECE_IMAGE_,
+                getRestTemplate().postForObject(Config.REST_ENDPOINT_ADD_WORKPIECE_IMAGE,
                         new ImageData(i, workpieceIdData.getWorkpieceId(), Util.bitmapToBase64(bitmap)), WorkpieceIdData.class);
                 publishProgress((int)(((double) i / bitmaps.length) * 100));
             }

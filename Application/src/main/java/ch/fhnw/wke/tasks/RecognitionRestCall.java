@@ -14,7 +14,7 @@ public class RecognitionRestCall extends AbstractRestCall<Bitmap, Void, Recognit
     protected RecognitionResultData doInBackground(Bitmap... bitmaps) {
         try {
             Bitmap bitmap = bitmaps[0];
-            RecognitionResultData recognitionResultData = getRestTemplate().postForObject(Config.REST_ENDPOINT_RECOGNITION,
+            RecognitionResultData recognitionResultData = getRestTemplate().postForObject(Config.REST_ENDPOINT_RECOGNIZE_WORKPIECE,
                     new ImageData(0, "", Util.bitmapToBase64(bitmap)), RecognitionResultData.class);
             return recognitionResultData;
         } catch (Exception e) {
