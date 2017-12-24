@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -19,21 +20,24 @@ import ch.fhnw.wke.util.Data;
 
 public class ReviewActivity extends AppCompatActivity {
 
-    private ImageAdapter mImageAdapter = new ImageAdapter(this, Data.imagesToBeAdded);
+    private ImageAdapter imageAdapter = new ImageAdapter(this, Data.imagesToBeAdded);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review);
         GridView gridview = findViewById(R.id.gridview);
-        gridview.setAdapter(mImageAdapter);
+        gridview.setAdapter(imageAdapter);
 
     }
 
     public void submit(View view) {
         ImageAdderRestCall imageAdderRestCall = new ImageAdderRestCall();
-        imageAdderRestCall.setOnPostExecuteAction((Void) -> finish());
-        imageAdderRestCall.execute(Data.imagesToBeAdded.toArray(new Bitmap[Data.imagesToBeAdded.size()])); // TODO show spinner or sth...
+        imageAdderRestCall.setOnPostExecuteAction(x -> finish());
+        imageAdderRestCall.setOnProgressUpdateAction(progress -> {
+            Toast.makeText(this, progress + "% uploaded", Toast.LENGTH_LONG).show();
+        });
+        imageAdderRestCall.execute(Data.imagesToBeAdded.toArray(new Bitmap[Data.imagesToBeAdded.size()]));
     }
 
     public void abort(View view) {

@@ -10,7 +10,6 @@ import ch.fhnw.wke.dto.RecognitionResultData;
 public class Data {
 
     public static RecognitionResultData recognitionResultData;
-    public static Bitmap imageToBeRecognized;
     public static List<Bitmap> imagesToBeAdded = new ArrayList<>();
 
 }

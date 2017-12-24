@@ -40,4 +40,5 @@ public class RecognitionResultData {
     public void setImages(List<String> images) {
         this.images = images;
     }
+    
 }
