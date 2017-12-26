@@ -40,7 +40,7 @@
         </activity>
         <activity
             android:name=".activities.RecognitionResultActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
             android:parentActivityName="ch.fhnw.wke.activities.RecognitionActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -48,8 +48,8 @@
         </activity>
         <activity
             android:name=".activities.ReviewActivity"
-            android:label="@string/app_name">
-            android:parentActivityName=".RecognitionActivity">
+            android:label="@string/app_name"
+            android:parentActivityName="ch.fhnw.wke.activities.RecognitionActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ch.fhnw.wke.activities.RecognitionActivity" />
