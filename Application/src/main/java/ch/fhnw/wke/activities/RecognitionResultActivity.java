@@ -23,9 +23,9 @@ public class RecognitionResultActivity extends AppCompatActivity {
             TextView textView1 = findViewById(R.id.textView1);
             TextView textView2 = findViewById(R.id.textView2);
             TextView textView3 = findViewById(R.id.textView3);
-            textView1.setText(String.valueOf(scores.get(0) + "\nclass: " + classes.get(0)));
-            textView2.setText(String.valueOf(scores.get(1) + "\nclass: " + classes.get(1)));
-            textView3.setText(String.valueOf(scores.get(2) + "\nclass: " + classes.get(2)));
+            textView1.setText("Number " + classes.get(0) + "\n(" +(int)(scores.get(0)*100) + "%)");
+            textView2.setText("Number " + classes.get(1) + "\n(" +(int)(scores.get(1)*100) + "%)");
+            textView3.setText("Number " + classes.get(2) + "\n(" +(int)(scores.get(2)*100) + "%)");
             ImageView imageView1 = findViewById(R.id.imageView1);
             ImageView imageView2 = findViewById(R.id.imageView2);
             ImageView imageView3 = findViewById(R.id.imageView3);

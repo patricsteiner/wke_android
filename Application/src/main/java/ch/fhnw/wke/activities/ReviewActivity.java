@@ -12,6 +12,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.util.Collections;
 import java.util.List;
 
 import ch.fhnw.wke.R;
@@ -28,14 +29,18 @@ public class ReviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_review);
         GridView gridview = findViewById(R.id.gridview);
         gridview.setAdapter(imageAdapter);
-
     }
 
     public void submit(View view) {
         ImageAdderRestCall imageAdderRestCall = new ImageAdderRestCall();
-        imageAdderRestCall.setOnPostExecuteAction(x -> finish());
+        imageAdderRestCall.setOnPostExecuteAction(x -> {
+            Data.imagesToBeAdded = Collections.emptyList();
+            finish();
+        });
+        Toast toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
         imageAdderRestCall.setOnProgressUpdateAction(progress -> {
-            Toast.makeText(this, progress + "% uploaded", Toast.LENGTH_LONG).show();
+            toast.setText(progress + "% uploaded");
+            toast.show();
         });
         imageAdderRestCall.execute(Data.imagesToBeAdded.toArray(new Bitmap[Data.imagesToBeAdded.size()]));
     }
