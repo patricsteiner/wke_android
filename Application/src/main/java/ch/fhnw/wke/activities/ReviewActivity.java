@@ -17,6 +17,7 @@ import java.util.List;
 
 import ch.fhnw.wke.R;
 import ch.fhnw.wke.tasks.ImageAdderRestCall;
+import ch.fhnw.wke.tasks.TransferLearningRestCall;
 import ch.fhnw.wke.util.Data;
 
 public class ReviewActivity extends AppCompatActivity {
@@ -35,6 +36,8 @@ public class ReviewActivity extends AppCompatActivity {
         ImageAdderRestCall imageAdderRestCall = new ImageAdderRestCall();
         imageAdderRestCall.setOnPostExecuteAction(x -> {
             Data.imagesToBeAdded = Collections.emptyList();
+            TransferLearningRestCall transferLearningRestCall = new TransferLearningRestCall();
+            transferLearningRestCall.execute(); // initiate the transfer learning after all images were added
             finish();
         });
         Toast toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
