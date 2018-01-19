@@ -9,6 +9,7 @@ import com.wonderkiln.camerakit.CameraView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import ch.fhnw.wke.Config;
 
@@ -25,25 +26,12 @@ public class MultiCaptureTask extends AbstractAsyncTask<CameraView, Integer, Lis
     @Override
     protected List<Bitmap> doInBackground(CameraView... cameraViews) {
         CameraView cameraView = cameraViews[0];
-        cameraView.setJpegQuality(60);
+        cameraView.setJpegQuality(80);
         cameraView.setMethod(METHOD_STILL);
         cameraView.setCropOutput(false);
         cameraView.setFocus(FOCUS_CONTINUOUS);
         cameraView.setFlash(FLASH_OFF);
-        cameraView.captureImage();
-
-        cameraView.addCameraKitListener(new CameraKitEventListenerAdapter() {
-            @Override
-            public void onImage(CameraKitImage cameraKitImage) {
-                byte[] bytes = cameraKitImage.getJpeg();
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, null);
-                bitmaps.add(bitmap);
-                if (++picturesTaken < totalPictures) {
-                    cameraView.captureImage();
-                    publishProgress((int)(((double) picturesTaken / totalPictures * 100)));
-                }
-            }
-        });
+        cameraView.captureImage(cameraKitImage -> capture(cameraView, cameraKitImage));
 
         while (picturesTaken < totalPictures) {
             try {
@@ -54,6 +42,16 @@ public class MultiCaptureTask extends AbstractAsyncTask<CameraView, Integer, Lis
         }
         publishProgress(100);
         return bitmaps;
+    }
+
+    void capture(CameraView cameraView, CameraKitImage cameraKitImage) {
+        byte[] bytes = cameraKitImage.getJpeg();
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, null);
+        bitmaps.add(bitmap);
+        if (++picturesTaken < totalPictures) {
+            cameraView.captureImage(image -> capture(cameraView, image));
+            publishProgress((int)(((double) picturesTaken / totalPictures * 100)));
+        }
     }
 
 }

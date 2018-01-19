@@ -23,14 +23,9 @@ public class CaptureTask extends AbstractAsyncTask<CameraView, Void, Bitmap> {
         cameraView.setCropOutput(false);
         cameraView.setFocus(FOCUS_CONTINUOUS);
         cameraView.setFlash(FLASH_OFF);
-        cameraView.captureImage();
-
-        cameraView.addCameraKitListener(new CameraKitEventListenerAdapter() {
-            @Override
-            public void onImage(CameraKitImage cameraKitImage) {
-                byte[] bytes = cameraKitImage.getJpeg();
-                bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, null);
-            }
+        cameraView.captureImage(cameraKitImage -> {
+            byte[] bytes = cameraKitImage.getJpeg();
+            bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, null);
         });
 
         while (bitmap == null) {

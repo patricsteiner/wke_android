@@ -62,7 +62,8 @@ public class RecognitionActivity extends AppCompatActivity {
     public void initiateNewWorkpiece(View view) {
         Toast toast = Toast.makeText(this, "", Toast.LENGTH_LONG);
         new AlertDialog.Builder(this)
-                .setMessage("Press OK when workpiece is in box, motor & lights are on and phone is in holder")
+                .setMessage("Press OK when workpiece is in box, motor & lights are on and phone is in holder." +
+                        (Data.workpieceIdData != null ? "\nPictures will be added to id " + Data.workpieceIdData.getWorkpieceId() : ""))
                 .setPositiveButton(android.R.string.ok, (dialogInterface, x) -> {
                     MultiCaptureTask multiCaptureTask = new MultiCaptureTask();
                     multiCaptureTask.setOnProgressUpdateAction(progress -> {
